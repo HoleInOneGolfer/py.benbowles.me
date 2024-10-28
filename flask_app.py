@@ -1,13 +1,11 @@
-# A very simple Flask Hello World app for you to get started with...
-
 from flask import Flask
 
 app = Flask(__name__)
 
 
 @app.route("/")
-def hello_world():
-    return "This is the start of my webserver!!!"
+def index():
+    return "Hello, World!"
 
 
 if __name__ == "__main__":
