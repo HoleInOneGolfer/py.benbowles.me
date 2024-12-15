@@ -13,7 +13,7 @@ else:  # PythonAnywhere or other *nix systems
 
 # Add your project directory to the sys.path
 if base_path not in sys.path:
-    sys.path.insert(base_path)
+    sys.path.append(base_path)
 
 
 # Function to dynamically discover and import Flask apps
