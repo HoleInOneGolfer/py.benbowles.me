@@ -2,13 +2,22 @@ import subprocess
 import os
 
 # Define the path to the repository
-REPO_PATH = os.path.expanduser("~/src")  # 'src' is the repository itself
+if os.name == "nt":  # Windows
+    REPO_PATH = os.getcwd()
+else:
+    REPO_PATH = os.path.expanduser("~/src")  # 'src' is the repository itself
 
 
 def update_repo():
     try:
         # Navigate to the repository
         os.chdir(REPO_PATH)
+
+        # Discard any uncommitted changes
+        subprocess.run(["git", "reset", "--hard"], check=True)
+
+        # Remove all untracked files and directories
+        subprocess.run(["git", "clean", "-fd"], check=True)
 
         # Pull the latest changes from the repository
         subprocess.run(
@@ -23,7 +32,7 @@ def update_repo():
         # Prune stale remote-tracking branches
         subprocess.run(["git", "remote", "prune", "origin"], check=True)
 
-        print("Repository and submodules updated successfully!")
+        print("Repository updated and cleaned successfully!")
     except subprocess.CalledProcessError as e:
         print(f"Error occurred: {e}")
 
