@@ -11,9 +11,9 @@ if os.name == "nt":  # Windows
 else:  # PythonAnywhere or other *nix systems
     base_path = "/home/benbow/src"
 
-# Add your project directory to the sys.path
-if base_path not in sys.path:
-    sys.path.append(base_path)
+    # add your project directory to the sys.path
+    if base_path not in sys.path:
+        sys.path.append(base_path)
 
 
 # Function to dynamically discover and import Flask apps
