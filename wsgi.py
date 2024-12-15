@@ -21,17 +21,28 @@ def discover_apps(base_path, exclude=[".git"]):
     apps = {}
     base_path = Path(base_path)
 
-    # Iterate over directories in the base path
+    print(f"Base path: {base_path}", file=sys.stderr)  # Log the base path
+
     for app_dir in base_path.iterdir():
         if app_dir.is_dir() and app_dir.name not in exclude:
+            print(
+                f"Checking directory: {app_dir}", file=sys.stderr
+            )  # Log each directory
             try:
-                # Import the app object from each app's __init__.py
-                module = import_module(f"{app_dir.name}")
+                # Try importing the app module
+                module = import_module(app_dir.name)
                 app = getattr(module, "app", None)
                 if app:
                     apps[f"/{app_dir.name}"] = app
+                else:
+                    print(
+                        f"No 'app' found in {app_dir.name}", file=sys.stderr
+                    )  # Log missing app object
             except Exception as e:
-                print(f"Error loading app from {app_dir.name}: {e}")
+                print(
+                    f"Error loading app from {app_dir.name}: {type(e).__name__} - {e}",
+                    file=sys.stderr,
+                )
 
     return apps
 
