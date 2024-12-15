@@ -6,7 +6,6 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from importlib import import_module
 
 # Determine the base path for the project
-# Adjust based on environment
 if os.name == "nt":  # Windows
     base_path = os.getcwd()
 else:  # PythonAnywhere or other *nix systems
@@ -18,7 +17,7 @@ if base_path not in sys.path:
 
 
 # Function to dynamically discover and import Flask apps
-def discover_apps(base_path, exclude=["main"]):
+def discover_apps(base_path, exclude=[".git"]):
     apps = {}
     base_path = Path(base_path)
 
@@ -37,7 +36,7 @@ def discover_apps(base_path, exclude=["main"]):
     return apps
 
 
-# create basic links to the other apps
+# Create basic links to the other apps
 def create_links(apps):
     links = []
     for path, app in apps.items():
@@ -45,13 +44,19 @@ def create_links(apps):
     return "<br>".join(links)
 
 
+# Create a basic index page
+def create_index(apps):
+    links = create_links(apps)
+    return f"<h1>{main_app.name}</h1><br>{links}"
+
+
 # Create the main app
 main_app = Flask(__name__)
 
 
 @main_app.route("/")
-def main_index():
-    return f"Hello, World!<br>{create_links(apps)}"
+def index():
+    return create_index(apps)
 
 
 # Discover other apps dynamically
@@ -59,3 +64,9 @@ apps = discover_apps(base_path)
 
 # Combine applications
 application = DispatcherMiddleware(main_app, apps)
+
+# If run directly, start the development server
+if __name__ == "__main__":
+    from werkzeug.serving import run_simple
+
+    run_simple("localhost", 5000, application)

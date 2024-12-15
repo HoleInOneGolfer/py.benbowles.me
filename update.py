@@ -20,6 +20,9 @@ def update_repo():
             ["git", "submodule", "update", "--init", "--recursive"], check=True
         )
 
+        # Prune stale remote-tracking branches
+        subprocess.run(["git", "remote", "prune", "origin"], check=True)
+
         print("Repository and submodules updated successfully!")
     except subprocess.CalledProcessError as e:
         print(f"Error occurred: {e}")
