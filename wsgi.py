@@ -1,12 +1,20 @@
 import sys
+import os
 from pathlib import Path
+from flask import Flask
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from importlib import import_module
 
+# Determine the base path for the project
+# Adjust based on environment
+if os.name == "nt":  # Windows
+    base_path = os.getcwd()
+else:  # PythonAnywhere or other *nix systems
+    base_path = "/home/benbow/src"
+
 # Add your project directory to the sys.path
-path = "/home/benbow/src"
-if path not in sys.path:
-    sys.path.append(path)
+if base_path not in sys.path:
+    sys.path.append(base_path)
 
 
 # Function to dynamically discover and import Flask apps
@@ -29,11 +37,25 @@ def discover_apps(base_path, exclude=["main"]):
     return apps
 
 
-# Import the main app
-from main import app as main_app
+# create basic links to the other apps
+def create_links(apps):
+    links = []
+    for path, app in apps.items():
+        links.append(f'<a href="{path}">{app.name}</a>')
+    return "<br>".join(links)
+
+
+# Create the main app
+main_app = Flask(__name__)
+
+
+@main_app.route("/")
+def main_index():
+    return f"Hello, World!<br>{create_links(apps)}"
+
 
 # Discover other apps dynamically
-apps = discover_apps(path)
+apps = discover_apps(base_path)
 
 # Combine applications
 application = DispatcherMiddleware(main_app, apps)
