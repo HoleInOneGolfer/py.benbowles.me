@@ -1,83 +1,104 @@
+""" WSGI entry point for the Flask application. """
+
 import sys
 import os
 from pathlib import Path
+from importlib import import_module
 from flask import Flask
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
-from importlib import import_module
 
 # Determine the base path for the project
-if os.name == "nt":  # Windows
-    base_path = os.getcwd()
-else:  # PythonAnywhere or other *nix systems
-    base_path = "/home/benbow/src"
+BASE_PATH = os.getcwd() if os.name == "nt" else "/home/benbow/src"
 
-# Add your project directory to the sys.path
-if base_path not in sys.path:
-    sys.path.append(base_path)
+# Add the base path to `sys.path` if not already present
+if BASE_PATH not in sys.path:
+    sys.path.append(BASE_PATH)
 
 
-# Function to dynamically discover and import Flask apps
-def discover_apps(base_path, exclude=[".git"]):
+def discover_apps(base_path, exclude=None):
+    """
+    Dynamically discover and import Flask apps within the base path.
+
+    Args:
+        base_path (str): The directory containing potential Flask apps.
+        exclude (list): Directories to exclude during discovery.
+
+    Returns:
+        dict: A mapping of URL prefixes to Flask app instances.
+    """
+    if exclude is None:
+        exclude = [".git", "__pycache__"]
+
     apps = {}
     base_path = Path(base_path)
 
-    print(f"Base path: {base_path}", file=sys.stderr)  # Log the base path
+    print(f"Base path: {base_path}", file=sys.stderr)
 
     for app_dir in base_path.iterdir():
         if app_dir.is_dir() and app_dir.name not in exclude:
-            print(
-                f"Checking directory: {app_dir}", file=sys.stderr
-            )  # Log each directory
+            print(f"Checking directory: {app_dir}", file=sys.stderr)
             try:
-                # Try importing the app module
+                # Import the app module dynamically
                 module = import_module(app_dir.name)
                 app = getattr(module, "app", None)
-                if app:
+                if app and isinstance(app, Flask):
                     apps[f"/{app_dir.name}"] = app
                 else:
                     print(
-                        f"No 'app' found in {app_dir.name}", file=sys.stderr
-                    )  # Log missing app object
-            except Exception as e:
+                        f"No valid Flask 'app' found in {app_dir.name}", file=sys.stderr
+                    )
+            except (ImportError, AttributeError) as e:
                 print(
                     f"Error loading app from {app_dir.name}: {type(e).__name__} - {e}",
                     file=sys.stderr,
                 )
-
     return apps
 
 
-# Create basic links to the other apps
 def create_links(apps):
-    links = []
-    for path, app in apps.items():
-        links.append(f'<a href="{path}">{app.name}</a>')
-    return "<br>".join(links)
+    """
+    Generate HTML links to all discovered apps.
+
+    Args:
+        apps (dict): A mapping of URL prefixes to Flask app instances.
+
+    Returns:
+        str: HTML containing links to the apps.
+    """
+    return "<br>".join(f'<a href="{path}">{app.name}</a>' for path, app in apps.items())
 
 
-# Create a basic index page
 def create_index(apps):
+    """
+    Generate an index page displaying links to all apps.
+
+    Args:
+        apps (dict): A mapping of URL prefixes to Flask app instances.
+
+    Returns:
+        str: HTML for the index page.
+    """
     links = create_links(apps)
-    return f"<h1>{main_app.name}</h1><br>{links}"
+    return f"<h1>{MAIN_APP.name}</h1><br>{links}"
 
 
-# Create the main app
-main_app = Flask(__name__)
+# Initialize the main application
+MAIN_APP = Flask(__name__)
 
 
-@main_app.route("/")
+@MAIN_APP.route("/")
 def index():
-    return create_index(apps)
+    """Root endpoint displaying app links."""
+    return create_index(APPS)
 
 
-# Discover other apps dynamically
-apps = discover_apps(base_path)
+# Discover and map other applications
+APPS = discover_apps(BASE_PATH)
 
-# Combine applications
-application = DispatcherMiddleware(main_app, apps)
+# Combine the main app and discovered apps using DispatcherMiddleware
+APPLICATION = DispatcherMiddleware(MAIN_APP, APPS)
 
-# If run directly, start the development server
 if __name__ == "__main__":
     from werkzeug.serving import run_simple
 
-    run_simple("localhost", 5000, application)
+    run_simple("localhost", 5000, APPLICATION)

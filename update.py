@@ -1,3 +1,5 @@
+""" Update a Git repository and its submodules """
+
 import subprocess
 import os
 
