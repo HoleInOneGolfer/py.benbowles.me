@@ -58,7 +58,7 @@ def update_repo(repo_path, branch=DEFAULT_BRANCH):
         run_command(["git", "clean", "-fd"])
 
         # Pull the latest changes
-        run_command(["git", "pull", branch])
+        run_command(["git", "pull", 'origin/', branch])
 
         # Update submodules
         run_command(["git", "submodule", "update", "--init", "--recursive", "--remote", "--merge"])
