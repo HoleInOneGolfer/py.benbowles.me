@@ -61,7 +61,7 @@ def update_repo(repo_path, branch=DEFAULT_BRANCH):
         run_command(["git", "pull", "origin", branch])
 
         # Update submodules
-        run_command(["git", "submodule", "update", "--init", "--recursive"])
+        run_command(["git", "submodule", "update", "--init", "--recursive", "--remote", "--merge"])
 
         # Prune stale remote-tracking branches
         run_command(["git", "remote", "prune", "origin"])
