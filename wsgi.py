@@ -37,18 +37,15 @@ for PROJECT_PATH in BASE_PATH.iterdir():
                 except ImportError as e:
                     continue
 
-
-# Initialize the main application
 MAIN_APP = Flask(__name__, instance_relative_config=True)
-
 
 @MAIN_APP.route("/")
 def index():
-    CONTENT = f"<h1>{MAIN_APP.name}</h1><br>"
-    CONTENT = CONTENT + "<br>".join(
+    content = f"<h1>{MAIN_APP.name}</h1><br>"
+    content = content + "<br>".join(
         f'<a href="{path}">{app.name}</a>' for path, app in APPS.items()
     )
-    return CONTENT
+    return content
 
 
 # Combine the main app and discovered apps using DispatcherMiddleware
