@@ -52,9 +52,9 @@ def index():
 
 
 # Combine the main app and discovered apps using DispatcherMiddleware
-APPLICATION = DispatcherMiddleware(MAIN_APP, APPS)
+application = DispatcherMiddleware(MAIN_APP, APPS)
 
 if __name__ == "__main__":
     from werkzeug.serving import run_simple
 
-    run_simple("localhost", 5000, APPLICATION)
+    run_simple("localhost", 5000, application)
