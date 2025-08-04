@@ -44,9 +44,11 @@ MAIN_APP = Flask(__name__, instance_relative_config=True)
 
 @MAIN_APP.route("/")
 def index():
-    return f"<h1>{MAIN_APP.name}</h1><br>{"<br>".join(
+    CONTENT = f"<h1>{MAIN_APP.name}</h1><br>"
+    CONTENT = CONTENT + "<br>".join(
         f'<a href="{path}">{app.name}</a>' for path, app in APPS.items()
-    )}"
+    )
+    return CONTENT
 
 
 # Combine the main app and discovered apps using DispatcherMiddleware
