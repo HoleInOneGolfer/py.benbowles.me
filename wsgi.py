@@ -27,7 +27,7 @@ def discover_apps(_base_path, _exclude=None):
         dict: A mapping of URL prefixes to Flask app instances.
     """
     if _exclude is None:
-        _exclude = [".git", "__pycache__"]
+        _exclude = [".git", "__pycache__", ".github"]
 
     _apps = {}
     _base_path = Path(_base_path)
