@@ -1,5 +1,4 @@
 [submodule "web-quiz-app"]
 	path = web-quiz-app
 	branch = main
-	update = merge
 	url = https://github.com/HoleInOneGolfer/web-quiz-app.git
