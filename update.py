@@ -2,59 +2,36 @@
 Update a Git repository and its submodules.
 """
 
-import subprocess
 import os
 import sys
 
 # Define the path to the repository
 REPO_PATH = os.getcwd() if os.name == "nt" else os.path.expanduser("~/src")
-
-# Default branch name; replace 'main' if needed
 DEFAULT_BRANCH = "main"
 
+"""
+COMMANDS
+* `git pull origin <branch>`: Pulls the latest changes from the specified branch of the remote repository.
+* `git submodule update --init --recursive --remote`: Updates all submodules to their latest commits, initializing them if they are not already initialized.
+* `git commit -a -m "Updated submodules to latest versions"`: Commits any changes made to the submodules with a message.
+* `git push origin <branch>`: Pushes the committed changes to the specified branch of the remote repository.
+"""
 
-def run_command(command, cwd=None):
-    try:
-        print(f"Running command: {' '.join(command)}", file=sys.stderr)
-        subprocess.run(command, cwd=cwd, check=True)
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Command failed: {' '.join(command)}\nError: {e}") from e
 
+def update_repo(repo_path=REPO_PATH, branch=DEFAULT_BRANCH):
+    print(f"Repo path: {repo_path}, Branch: {branch}", file=sys.stderr)
+    # check if actually a github repository
+    if not os.path.isdir(repo_path) or not os.path.exists(os.path.join(repo_path, ".git")):
+        raise ValueError(f"Invalid repository: {repo_path}")
 
-def update_repo(repo_path, branch=DEFAULT_BRANCH):
-    if not os.path.isdir(repo_path):
-        raise ValueError(f"Invalid repository path: {repo_path}")
+    # Change to the repository directory
+    os.chdir(repo_path)
+    print(f"Changed directory to: {repo_path}", file=sys.stderr)
 
-    print(f"Updating repository at: {repo_path}", file=sys.stderr)
-
-    try:
-        # Navigate to the repository
-        os.chdir(repo_path)
-
-        # Discard uncommitted changes
-        run_command(["git", "reset", "--hard"])
-
-        # Remove untracked files and directories
-        run_command(["git", "clean", "-fd"])
-
-        # Pull the latest changes
-        run_command(["git", "pull", 'origin', branch])
-
-        # Update submodules
-        run_command(["git", "submodule", "update", "--init", "--recursive", "--remote", "--merge"])
-
-        # Prune stale remote-tracking branches
-        run_command(["git", "remote", "prune", "origin"])
-
-        print("Repository updated and cleaned successfully!")
-    except RuntimeError as e:
-        print(f"Error updating repository: {e}", file=sys.stderr)
-        sys.exit(1)
-
+    os.system(f"git pull origin {branch}")
+    os.system("git submodule update --init --recursive --remote")
+    os.system('git commit -a -m "Updated submodules to latest versions"')
+    os.system(f"git push origin {branch}")
 
 if __name__ == "__main__":
-    try:
-        update_repo(REPO_PATH)
-    except (RuntimeError, ValueError) as e:
-        print(f"Fatal error: {e}", file=sys.stderr)
-        sys.exit(1)
+    update_repo()
