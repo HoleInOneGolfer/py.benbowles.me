@@ -1,0 +1,3 @@
+[submodule "web-quiz-app"]
+	path = web-quiz-app
+	url = https://github.com/HoleInOneGolfer/web-quiz-app.git
