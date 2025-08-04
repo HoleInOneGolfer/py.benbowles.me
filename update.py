@@ -14,16 +14,6 @@ DEFAULT_BRANCH = "main"
 
 
 def run_command(command, cwd=None):
-    """
-    Run a shell command and handle errors gracefully.
-
-    Args:
-        command (list): The command to execute as a list.
-        cwd (str): The working directory for the command (optional).
-
-    Raises:
-        RuntimeError: If the command fails.
-    """
     try:
         print(f"Running command: {' '.join(command)}", file=sys.stderr)
         subprocess.run(command, cwd=cwd, check=True)
@@ -32,16 +22,6 @@ def run_command(command, cwd=None):
 
 
 def update_repo(repo_path, branch=DEFAULT_BRANCH):
-    """
-    Update the Git repository and its submodules.
-
-    Args:
-        repo_path (str): Path to the Git repository.
-        branch (str): Branch name to pull from.
-
-    Raises:
-        RuntimeError: If any git command fails.
-    """
     if not os.path.isdir(repo_path):
         raise ValueError(f"Invalid repository path: {repo_path}")
 

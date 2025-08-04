@@ -17,8 +17,8 @@ if BASE_PATH not in sys.path:
 print(f"Base path: {BASE_PATH}", file=sys.stderr)
 
 EXCLUDE_PATHS = [".git", "__pycache__", ".github", "tests", "venv"]
-APPS = {}
 BASE_PATH = Path(BASE_PATH)
+APPS = {}
 
 for PROJECT_PATH in BASE_PATH.iterdir():
     if PROJECT_PATH.is_dir() and PROJECT_PATH.name not in EXCLUDE_PATHS:
