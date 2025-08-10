@@ -51,6 +51,9 @@ def index():
 # Combine the main app and discovered apps using DispatcherMiddleware
 application = DispatcherMiddleware(MAIN_APP, APPS)
 
+for app in APPS:
+    print(app.config)
+
 if __name__ == "__main__":
     from werkzeug.serving import run_simple
 
