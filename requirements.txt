@@ -1,1 +1,1 @@
-quiz_server @ git+https://github.com/HoleInOneGolfer/web-quiz-app.git@56c323b028205fcbba97dc066f2045797761eb42
+quiz_server @ git+https://github.com/HoleInOneGolfer/web-quiz-app.git
