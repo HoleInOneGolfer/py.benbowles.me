@@ -1,29 +1,42 @@
 """
-Update a Git repository and its submodules.
+Update a Git repository and install/upgrade Python packages.
+The packages are specified in a requirements.txt file.
 """
 
 import os
 
 REPO_PATH = os.getcwd() if os.name == "nt" else os.path.expanduser("~/src")
 DEFAULT_BRANCH = "main"
+REQUIREMENTS_FILE = os.path.join(REPO_PATH, "requirements.txt")
 
-def update_repo(repo_path=REPO_PATH, branch=DEFAULT_BRANCH):
+def update_repository():
     """
-    COMMANDS
-    * `git pull origin <branch>`: Pulls the latest changes from the specified branch of the remote repository.
-    * `git submodule update --init --recursive --remote`: Updates all submodules to their latest commits, initializing them if they are not already initialized.
-    * `git commit -a -m "Updated submodules to latest versions"`: Commits any changes made to the submodules with a message.
-    * `git push origin <branch>`: Pushes the committed changes to the specified branch of the remote repository.
+    Update the Git repository to the latest commit on the default branch.
     """
-    if not os.path.isdir(repo_path) or not os.path.exists(os.path.join(repo_path, ".git")):
-        raise ValueError(f"Invalid repository: {repo_path}")
+    os.chdir(REPO_PATH)
+    os.system(f"git fetch origin {DEFAULT_BRANCH}")
+    os.system(f"git reset --hard origin/{DEFAULT_BRANCH}")
 
-    os.chdir(repo_path)
+def install_requirements():
+    """
+    Install or upgrade Python packages from the requirements.txt file.
+    """
+    if os.path.exists(REQUIREMENTS_FILE):
+        os.system(f"pip install --upgrade -r {REQUIREMENTS_FILE}")
+    else:
+        print(f"Requirements file not found: {REQUIREMENTS_FILE}")
 
-    os.system(f"git pull origin {branch}")
-    os.system("git submodule update --init --recursive --remote")
-    os.system('git commit -a -m "Updated submodules to latest versions"')
-    os.system(f"git push origin {branch}")
+def main():
+    """
+    Main function to update the repository and install requirements.
+    """
+    print("Updating repository...")
+    update_repository()
+
+    print("Installing requirements...")
+    install_requirements()
+
+    print("Update complete.")
 
 if __name__ == "__main__":
-    update_repo()
+    main()
