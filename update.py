@@ -22,7 +22,7 @@ def install_requirements():
     Install or upgrade Python packages from the requirements.txt file.
     """
     if os.path.exists(REQUIREMENTS_FILE):
-        os.system(f"pip install --force-reinstall --no-deps -r {REQUIREMENTS_FILE}")
+        os.system(f"pip install --force-reinstall -r {REQUIREMENTS_FILE}")
     else:
         print(f"Requirements file not found: {REQUIREMENTS_FILE}")
 
